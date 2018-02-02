@@ -1,0 +1,16 @@
+yi	vi	studyid	taxa	species	setting
+-0.4727	0.0914	26	Aves	Agelaius_phoeniceus	wild
+-0.02	0.0889	26	Aves	Agelaius_phoeniceus	wild
+0	0.151982	17	Squamata	Anolis_sabanus	wild
+3.3542	0.811641	1	Carnivora	Arctocephalus_forsteri	wild
+-0.6992	0.3032	4	Primates	Colobus_vellerosus	wild
+0	0.0001	21	Perissodactyla	Equus_quagga	wild
+-1.2676	0.1087	21	Perissodactyla	Equus_quagga	wild
+-0.6214	0.0955	21	Perissodactyla	Equus_quagga	wild
+-0.5579	0.0947	21	Perissodactyla	Equus_quagga	wild
+0.08	0.0913	21	Perissodactyla	Equus_quagga	wild
+0.0542	0.0913	21	Perissodactyla	Equus_quagga	wild
+-0.8231	0.0986	21	Perissodactyla	Equus_quagga	wild
+-0.7363	0.0972	21	Perissodactyla	Equus_quagga	wild
+-0.2702	0.061757	14	Aves	Ptilonorhynchus_violaceus	wild
+-1.7426	0.2706	2	Squamata	Sceloporus_occidentalis	wild

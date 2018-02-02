@@ -1,0 +1,5 @@
+yi	vi	studyid	taxa	species	setting
+0.4945	0.1114	16	Aves	Parus_major	wild
+0.345	0.1097	16	Aves	Parus_major	wild
+0.4296	0.1106	16	Aves	Parus_major	wild
+0.1263	0.1431	12	Aves	Passer_domesticus	captive

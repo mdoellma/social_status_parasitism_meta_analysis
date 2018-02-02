@@ -1,0 +1,86 @@
+#!/afs/crc.nd.edu/x86_64_linux/r/R/3.4.0/gcc/4.8.5/bin/R
+#12/5/17
+
+args = commandArgs(trailingOnly=TRUE)
+library(ape)
+library(brms)
+library(coda)
+library(MCMCglmm)
+
+root2 <- sub("Rdata", "", args[1])
+load(args[1])
+
+print(args[1])
+print(root2)
+
+#Write Model Summary Table
+modsum <- paste(root2,"sum.txt",sep="")
+modsummary <- data.frame(Model = c(rep("Model1",3),rep("ModelObsOnly",4),
+	rep("Model3",4),rep("Model4",5),rep("Model5",5),rep("Model6",6)),
+	Stat=c("Intercept","Study","Residual",
+	"Intercept","nothing","nothing","Residual",
+	"Intercept","Study","Species","Residual",
+	"Intercept","Setting","Study","Species","Residual",
+	"Intercept","Study","Species","Phylogeny","Residual",
+	"Intercept","Setting","Study","Species","Phylogeny","Residual"),
+	WAIC=rep(NA,27),
+	PointEst=rep(NA,27),
+	l95=rep(NA,27),
+	u95=rep(NA,27),
+	pMCMC=rep(NA,27),
+	kfoldIC=rep(NA,27),
+        SE=rep(NA,27),
+        K=rep(NA,27),
+	stringsAsFactors=FALSE)
+sub <- c(1,3,4)
+modsummary[1,3]<-summary(model1,waic=T)$waic
+x <- as.data.frame(model1, pars = "b_")[,1]
+modsummary[1,7]<-sum(x < 0) / length(x)
+modsummary[1,8:10]<-c(k1$kfoldic,k1$se_kfoldic,k1$K)
+modsummary[1,4:6]<-summary(model1,waic=T)$fixed[1,sub]
+modsummary[2,4:6]<-summary(model1,waic=T)$random$study[,sub]
+modsummary[3,4:6]<-summary(model1,waic=T)$random$obs[,sub]
+modsummary[4,3]<-summary(modelo,waic=T)$waic
+x <- as.data.frame(modelo, pars = "b_")[,1]
+modsummary[4,7]<-sum(x < 0) / length(x)
+modsummary[4,8:10]<-c(ko$kfoldic,ko$se_kfoldic,ko$K)
+modsummary[4,4:6]<-summary(modelo,waic=T)$fixed[1,sub]
+modsummary[7,4:6]<-summary(modelo,waic=T)$random$obs[,sub]
+
+write.table(modsummary, modsum, quote = F, sep = "\t", row.names = F)
+
+
+#Write Model Heterogeneity Table
+modhet <- paste(root2,"het.txt",sep="")
+het <- data.frame(Model = c(rep("Model1",3),rep("Model2",3),
+        rep("Model3",4),rep("Model4",4),rep("Model5",5),rep("Model6",5)),
+        Stat=c("Study I^2","Residual I^2","Total I^2",
+        "nothing","Residual I^2","Total I^2",
+        "Study I^2","Species I^2","Residual I^2","Total I^2",
+        "Study I^2","Species I^2","Residual I^2","Total I^2",
+        "Study I^2","Species I^2","Phylogeny I^2","Residual I^2","Total I^2",
+        "Study I^2","Species I^2","Phylogeny I^2","Residual I^2","Total I^2"),
+        PointEst=rep(NA,24),
+        l95=rep(NA,24),
+        u95=rep(NA,24),
+        stringsAsFactors=FALSE)
+
+#Model1
+temp <- as.mcmc(as.data.frame(model1)[,2:3])
+total.var <- temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,2]^2/(total.var)
+het[1,3:5] <- c(mean(I2study),HPDinterval(I2study))
+I2units <- 100*temp[,1]^2/(total.var)
+het[2,3:5] <- c(mean(I2units),HPDinterval(I2units))
+I2Tot <- 100*(temp[,2]^2 + temp[,1]^2)/(total.var)
+het[3,3:5] <- c(mean(I2Tot),HPDinterval(I2Tot))
+
+#Model2
+temp <- as.mcmc(as.data.frame(modelo)[,3:4])
+total.var <- temp[,1]^2 + s2m
+I2units <- 100*temp[,1]^2/(total.var)
+het[5,3:5] <- c(mean(I2units),HPDinterval(I2units))
+I2Tot <- 100*(temp[,1]^2)/(total.var)
+het[6,3:5] <- c(mean(I2Tot),HPDinterval(I2Tot))
+
+write.table(het, modhet, quote = F, sep = "\t", row.names = F)

@@ -1,0 +1,7 @@
+yi	vi	studyid	taxa	species	setting
+-0.5972	0.362736	22	Primates	Eulemur_fulvus_rufus	wild
+0.2527	0.352281	22	Primates	Eulemur_fulvus_rufus	wild
+0.4556	0.357413	22	Primates	Eulemur_fulvus_rufus	wild
+1.0371	0.376764	22	Primates	Eulemur_fulvus_rufus	wild
+-0.3221	0.344368	22	Primates	Eulemur_fulvus_rufus	wild
+0.1995	0.342235	22	Primates	Eulemur_fulvus_rufus	wild

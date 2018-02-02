@@ -1,0 +1,11 @@
+yi	vi	studyid	taxa	species	setting
+0.4945	0.1114	16	Aves	Parus_major	wild
+0.345	0.1097	16	Aves	Parus_major	wild
+0.4296	0.1106	16	Aves	Parus_major	wild
+0.1263	0.1431	12	Aves	Passer_domesticus	captive
+-0.5972	0.362736	22	Primates	Eulemur_fulvus_rufus	wild
+0.2527	0.352281	22	Primates	Eulemur_fulvus_rufus	wild
+0.4556	0.357413	22	Primates	Eulemur_fulvus_rufus	wild
+1.0371	0.376764	22	Primates	Eulemur_fulvus_rufus	wild
+-0.3221	0.344368	22	Primates	Eulemur_fulvus_rufus	wild
+0.1995	0.342235	22	Primates	Eulemur_fulvus_rufus	wild
