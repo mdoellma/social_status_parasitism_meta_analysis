@@ -1,0 +1,10 @@
+yi	vi	studyid	taxa	species	setting	metric
+0.3242	0.1842	3	Primates	Pan_troglodytes	wild	richness
+1.6225	0.2416	3	Primates	Pan_troglodytes	wild	richness
+0.9827	0.3736	15	Primates	Pan_troglodytes	wild	richness
+0.6992	0.1572	19	Primates	Papio_anubis	wild	richness
+0.1995	0.342235	22	Primates	Eulemur_fulvus_rufus	wild	richness
+0.4556	0.357413	22	Primates	Eulemur_fulvus_rufus	wild	richness
+0.8144	0.121822	23	Carnivora	Suricata_suricatta	wild	richness
+-0.3075	0.2569	25	Primates	Lophocebus_albigena	wild	richness
+-0.02	0.0889	26	Aves	Agelaius_phoeniceus	wild	richness

@@ -1,0 +1,7 @@
+yi	vi	studyid	taxa	species	setting
+1.0409	0.371181	1	Aves	Malurus_cyaneus	wild
+0.4945	0.1114	2	Aves	Parus_major	wild
+0.345	0.1097	2	Aves	Parus_major	wild
+0.4296	0.1106	2	Aves	Parus_major	wild
+-1.7426	0.2706	3	Squamata	Sceloporus_occidentalis	wild
+0	0.151982	4	Squamata	Anolis_sabanus	wild

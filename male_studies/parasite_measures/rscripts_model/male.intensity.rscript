@@ -1,0 +1,98 @@
+#!/afs/crc.nd.edu/x86_64_linux/r/R/3.4.0/gcc/4.8.5/bin/R
+
+#Meta-analysis revisions with BRMS, male template
+#11/20/17, MMD
+
+library(ape)
+library(MCMCglmm)
+library(brms)
+
+args = commandArgs(trailingOnly=TRUE)
+root <- sub("txt", "", args[1])
+tips <- c("Pan_troglodytes","Colobus_vellerosus","Symphodus_ocellatus",
+        "Anolis_sabanus","Malurus_cyaneus","Sceloporus_occidentalis")
+malesTree <- read.tree("../male.bladj")
+malesTree <- drop.tip(malesTree, tips, trim.internal = TRUE, subtree = FALSE,
+         root.edge = 0, rooted = is.rooted(malesTree))
+
+inv.males <- MCMCglmm::inverseA(malesTree, nodes = "TIPS", scale = TRUE)
+A <- solve(inv.males$Ainv)
+rownames(A) <- rownames(inv.males$Ainv)
+
+malesData <- read.table(args[1],header=T,stringsAsFactors=F)
+malesData$phylo <- as.factor(malesData$species)
+malesData$study <- as.factor(malesData$studyid)
+malesData$set <- as.factor(malesData$setting)
+malesData$obs <- 1:nrow(malesData)
+
+#calculate "typical" measurement error variance as Higgins & Thompson 2002
+# wi = inverse of Var
+malesData$wi <- 1/malesData$vi
+s2m <- sum(malesData$wi*(length(malesData$wi)-1))/(sum(malesData$wi)^2-sum(malesData$wi^2))
+
+
+
+
+
+#study
+model1 <- brm(yi | se(sqrt(vi)) ~ 1 + (1|study) + (1|obs),
+                    data = malesData, family = gaussian(),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.998,max_treedepth = 15),
+                    chains = 4, cores = 4, iter = 4000, warmup = 1000)
+
+#study, moderator
+model2 <- brm(yi | se(sqrt(vi)) ~ set + (1|study) + (1|obs),
+                    data = malesData, family = gaussian(),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.998,max_treedepth = 15),
+                    chains = 4, cores = 4, iter = 4000, warmup = 1000)
+
+#species, study           
+model3 <- brm(yi | se(sqrt(vi)) ~ 1 + (1|study) + (1|species) + (1|obs),
+                    data = malesData, family = gaussian(),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.998,max_treedepth = 15),
+                    chains = 4, cores = 4, iter = 4000, warmup = 1000)
+
+#species, study, moderator
+model4 <- brm(yi | se(sqrt(vi)) ~ set + (1|study) + (1|species) + (1|obs),
+                    data = malesData, family = gaussian(),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.998,max_treedepth = 15),
+                    chains = 4, cores = 4, iter = 4000, warmup = 1000)
+
+#phylo, species, study
+model5 <- brm(yi | se(sqrt(vi)) ~ 1 + (1|study) + (1|species) + (1|phylo) + (1|obs),
+                    data = malesData, family = gaussian(),
+                    cov_ranef = list(phylo = A),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.998,max_treedepth = 15),
+                    chains = 4, cores = 4, iter = 4000, warmup = 1000)
+
+#Full model, phylo, species, study, moderator
+model6 <- brm(yi | se(sqrt(vi)) ~ set + (1|study) + (1|species) + (1|phylo) + (1|obs), 
+                    data = malesData, family = gaussian(), 
+                    cov_ranef = list(phylo = A),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.998,max_treedepth = 15),
+                    chains = 4, cores = 4, iter = 4000, warmup = 1000)
+
+k1 <- kfold(model1,K=10)
+k2 <- kfold(model2,K=10)
+k3 <- kfold(model3,K=10)
+k4 <- kfold(model4,K=10)
+k5 <- kfold(model5,K=10)
+k6 <- kfold(model6,K=10)
+
+outfile = paste(root,"Rdata",sep="")
+print(outfile)
+save.image(outfile)
+q()
+
