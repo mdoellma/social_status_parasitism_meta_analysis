@@ -1,0 +1,17 @@
+yi	vi	studyid	taxa	species	setting	metric
+0.7567	0.149296	5	Primates	Papio_cynocephalus	wild	intensity
+1.5146	0.514706	6	Primates	Papio_cynocephalus	wild	richness
+1.8831	0.577298	6	Primates	Papio_cynocephalus	wild	richness
+-0.4023	0.1074	7	Primates	Papio_cynocephalus	wild	intensity
+-0.1648	0.1056	7	Primates	Papio_cynocephalus	wild	intensity
+0.0436	0.0635	8	Primates	Papio_anubis	wild	richness
+0.0617	0.0635	8	Primates	Papio_anubis	wild	intensity
+-1.7747	0.729513	9	Primates	Papio_ursinus	wild	prevalence
+-0.4588	0.3509	9	Primates	Papio_ursinus	wild	prevalence
+0	0.729513	9	Primates	Papio_ursinus	wild	prevalence
+0	0.455945	9	Primates	Papio_ursinus	wild	prevalence
+0.3822	0.430615	9	Primates	Papio_ursinus	wild	prevalence
+0.3822	0.430615	9	Primates	Papio_ursinus	wild	prevalence
+0.3822	0.430615	9	Primates	Papio_ursinus	wild	prevalence
+0.5052	0.592729	9	Primates	Papio_ursinus	wild	prevalence
+0.8347	0.3914	9	Primates	Papio_ursinus	wild	prevalence

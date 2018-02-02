@@ -1,0 +1,17 @@
+yi	vi	studyid	taxa	species	setting
+-0.4722	0.157538	1	Artiodactyla	Capra_aegagrus	captive
+-0.154	0.3677	12	Primates	Cercopithecus_mitis_albogularis	provisioned
+1.1407	0.4258	12	Primates	Cercopithecus_mitis_albogularis	provisioned
+-1.6166	0.485458	12	Primates	Cercopithecus_mitis_albogularis	provisioned
+0.2594	0.3697	12	Primates	Cercopithecus_mitis_albogularis	provisioned
+-0.8525	0.3997	12	Primates	Cercopithecus_mitis_albogularis	provisioned
+-2.4929	1.0153	12	Primates	Cercopithecus_mitis_stuhlmanni	provisioned
+1.0943	0.4599	12	Primates	Cercopithecus_mitis_stuhlmanni	provisioned
+0	0.0001	10	Perissodactyla	Equus_quagga	wild
+-0.6028	0.0629	10	Perissodactyla	Equus_quagga	wild
+-0.525	0.0623	10	Perissodactyla	Equus_quagga	wild
+-0.4567	0.0618	10	Perissodactyla	Equus_quagga	wild
+-0.158	0.0605	10	Perissodactyla	Equus_quagga	wild
+-0.1742	0.0605	10	Perissodactyla	Equus_quagga	wild
+-0.1697	0.0605	10	Perissodactyla	Equus_quagga	wild
+-0.194	0.0606	10	Perissodactyla	Equus_quagga	wild

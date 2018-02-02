@@ -1,0 +1,199 @@
+#!/afs/crc.nd.edu/x86_64_linux/r/R/3.4.0/gcc/4.8.5/bin/R
+#12/5/17
+
+args = commandArgs(trailingOnly=TRUE)
+library(ape)
+library(brms)
+library(coda)
+library(MCMCglmm)
+
+root2 <- sub("Rdata", "", args[1])
+load(args[1])
+
+print(args[1])
+print(root2)
+
+#Write Model Summary Table
+modsum <- paste(root2,"sum.txt",sep="")
+modsummary <- data.frame(Model = c(rep("Model1",3),rep("Model2",5),
+	rep("Model3",4),rep("Model4",6),rep("Model5",5),rep("Model6",7)),
+	Stat=c("Intercept","Study","Residual",
+	"Intercept","Setting","Setting","Study","Residual",
+	"Intercept","Study","Species","Residual",
+	"Intercept","Setting","Setting","Study","Species","Residual",
+	"Intercept","Study","Species","Phylogeny","Residual",
+	"Intercept","Setting","Setting","Study","Species","Phylogeny","Residual"),
+	WAIC=rep(NA,30),
+	PointEst=rep(NA,30),
+	l95=rep(NA,30),
+	u95=rep(NA,30),
+	pMCMC=rep(NA,30),
+	kfoldIC=rep(NA,30),
+        SE=rep(NA,30),
+        K=rep(NA,30),
+	stringsAsFactors=FALSE)
+sub <- c(1,3,4)
+modsummary[1,3]<-summary(model1,waic=T)$waic
+x <- as.data.frame(model1, pars = "b_")[,1]
+modsummary[1,7]<-sum(x < 0) / length(x)
+modsummary[1,8:10]<-c(k1$kfoldic,k1$se_kfoldic,k1$K)
+modsummary[1,4:6]<-summary(model1,waic=T)$fixed[1,sub]
+modsummary[2,4:6]<-summary(model1,waic=T)$random$study[,sub]
+modsummary[3,4:6]<-summary(model1,waic=T)$random$obs[,sub]
+modsummary[4,3]<-summary(model2,waic=T)$waic
+x <- as.data.frame(model2, pars = "b_")[,1]
+modsummary[4,7]<-sum(x < 0) / length(x)
+modsummary[4,8:10]<-c(k2$kfoldic,k2$se_kfoldic,k2$K)
+modsummary[4,4:6]<-summary(model2,waic=T)$fixed[1,sub]
+modsummary[5,2]<-row.names(summary(model2,waic=T)$fixed)[2]
+modsummary[5,4:6]<-summary(model2,waic=T)$fixed[2,sub]
+x <- as.data.frame(model2, pars = "b_")[,2]
+modsummary[5,7]<-sum(x < 0) / length(x)
+modsummary[6,2]<-row.names(summary(model2,waic=T)$fixed)[3]
+modsummary[6,4:6]<-summary(model2,waic=T)$fixed[3,sub]
+x <- as.data.frame(model2, pars = "b_")[,3]
+modsummary[6,7]<-sum(x < 0) / length(x)
+modsummary[7,4:6]<-summary(model2,waic=T)$random$study[,sub]           
+modsummary[8,4:6]<-summary(model2,waic=T)$random$obs[,sub]
+modsummary[9,3]<-summary(model3,waic=T)$waic
+x <- as.data.frame(model3, pars = "b_")[,1]
+modsummary[9,7]<-sum(x < 0) / length(x)
+modsummary[9,8:10]<-c(k3$kfoldic,k3$se_kfoldic,k3$K)
+modsummary[9,4:6]<-summary(model3,waic=T)$fixed[1,sub]
+modsummary[10,4:6]<-summary(model3,waic=T)$random$study[,sub]
+modsummary[11,4:6]<-summary(model3,waic=T)$random$species[,sub]
+modsummary[12,4:6]<-summary(model3,waic=T)$random$obs[,sub]
+modsummary[13,3]<-summary(model4,waic=T)$waic
+x <- as.data.frame(model4, pars = "b_")[,1]
+modsummary[13,7]<-sum(x < 0) / length(x)
+modsummary[13,8:10]<-c(k4$kfoldic,k4$se_kfoldic,k4$K)
+modsummary[13,4:6]<-summary(model4,waic=T)$fixed[1,sub]
+modsummary[14,2]<-row.names(summary(model4,waic=T)$fixed)[2]
+modsummary[14,4:6]<-summary(model4,waic=T)$fixed[2,sub]
+x <- as.data.frame(model4, pars = "b_")[,2]
+modsummary[14,7]<-sum(x < 0) / length(x)
+modsummary[15,2]<-row.names(summary(model4,waic=T)$fixed)[3]
+modsummary[15,4:6]<-summary(model4,waic=T)$fixed[3,sub]
+x <- as.data.frame(model4, pars = "b_")[,3]
+modsummary[15,7]<-sum(x < 0) / length(x)
+modsummary[16,4:6]<-summary(model4,waic=T)$random$study[,sub]
+modsummary[17,4:6]<-summary(model4,waic=T)$random$species[,sub]
+modsummary[18,4:6]<-summary(model4,waic=T)$random$obs[,sub]
+modsummary[19,3]<-summary(model5,waic=T)$waic
+x <- as.data.frame(model5, pars = "b_")[,1]
+modsummary[19,7]<-sum(x < 0) / length(x)
+modsummary[19,8:10]<-c(k5$kfoldic,k5$se_kfoldic,k5$K)
+modsummary[19,4:6]<-summary(model5,waic=T)$fixed[1,sub]
+modsummary[20,4:6]<-summary(model5,waic=T)$random$study[,sub]
+modsummary[21,4:6]<-summary(model5,waic=T)$random$species[,sub]
+modsummary[22,4:6]<-summary(model5,waic=T)$random$phylo[,sub]
+modsummary[23,4:6]<-summary(model5,waic=T)$random$obs[,sub]
+modsummary[24,3]<-summary(model6,waic=T)$waic
+x <- as.data.frame(model6, pars = "b_")[,1]
+modsummary[24,7]<-sum(x < 0) / length(x)
+modsummary[24,8:10]<-c(k6$kfoldic,k6$se_kfoldic,k6$K)
+modsummary[24,4:6]<-summary(model6,waic=T)$fixed[1,sub]
+modsummary[25,2]<-row.names(summary(model6,waic=T)$fixed)[2]
+modsummary[25,4:6]<-summary(model6,waic=T)$fixed[2,sub]
+x <- as.data.frame(model6, pars = "b_")[,2]
+modsummary[25,7]<-sum(x < 0) / length(x)
+modsummary[26,2]<-row.names(summary(model6,waic=T)$fixed)[3]
+modsummary[26,4:6]<-summary(model6,waic=T)$fixed[3,sub]
+x <- as.data.frame(model6, pars = "b_")[,3]
+modsummary[26,7]<-sum(x < 0) / length(x)
+modsummary[27,4:6]<-summary(model6,waic=T)$random$study[,sub]
+modsummary[28,4:6]<-summary(model6,waic=T)$random$species[,sub]
+modsummary[29,4:6]<-summary(model6,waic=T)$random$phylo[,sub]
+modsummary[30,4:6]<-summary(model6,waic=T)$random$obs[,sub]
+
+write.table(modsummary, modsum, quote = F, sep = "\t", row.names = F)
+
+
+#Write Model Heterogeneity Table
+modhet <- paste(root2,"het.txt",sep="")
+het <- data.frame(Model = c(rep("Model1",3),rep("Model2",3),
+        rep("Model3",4),rep("Model4",4),rep("Model5",5),rep("Model6",5)),
+        Stat=c("Study I^2","Residual I^2","Total I^2",
+        "Study I^2","Residual I^2","Total I^2",
+        "Study I^2","Species I^2","Residual I^2","Total I^2",
+        "Study I^2","Species I^2","Residual I^2","Total I^2",
+        "Study I^2","Species I^2","Phylogeny I^2","Residual I^2","Total I^2",
+        "Study I^2","Species I^2","Phylogeny I^2","Residual I^2","Total I^2"),
+        PointEst=rep(NA,24),
+        l95=rep(NA,24),
+        u95=rep(NA,24),
+        stringsAsFactors=FALSE)
+
+#Model1
+temp <- as.mcmc(as.data.frame(model1)[,2:3])
+total.var <- temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,2]^2/(total.var)
+het[1,3:5] <- c(mean(I2study),HPDinterval(I2study))
+I2units <- 100*temp[,1]^2/(total.var)
+het[2,3:5] <- c(mean(I2units),HPDinterval(I2units))
+I2Tot <- 100*(temp[,2]^2 + temp[,1]^2)/(total.var)
+het[3,3:5] <- c(mean(I2Tot),HPDinterval(I2Tot))
+
+#Model2
+temp <- as.mcmc(as.data.frame(model2)[,3:4])
+total.var <- temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,2]^2/(total.var)
+het[4,3:5] <- c(mean(I2study),HPDinterval(I2study))
+I2units <- 100*temp[,1]^2/(total.var)
+het[5,3:5] <- c(mean(I2units),HPDinterval(I2units))
+I2Tot <- 100*(temp[,2]^2 + temp[,1]^2)/(total.var)
+het[6,3:5] <- c(mean(I2Tot),HPDinterval(I2Tot))
+
+#Model3
+temp <- as.mcmc(as.data.frame(model3)[,2:4])
+total.var <- temp[,3]^2 + temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,3]^2/(total.var)
+het[7,3:5] <- c(mean(I2study),HPDinterval(I2study))
+I2species <- 100*temp[,2]^2/(total.var)
+het[8,3:5] <- c(mean(I2species),HPDinterval(I2species))
+I2units <- 100*temp[,1]^2/(total.var)
+het[9,3:5] <- c(mean(I2units),HPDinterval(I2units))
+I2Tot <- 100*(temp[,3]^2 + temp[,2]^2 + temp[,1]^2)/(total.var)
+het[10,3:5] <- c(mean(I2Tot),HPDinterval(I2Tot))
+
+#Model4
+temp <- as.mcmc(as.data.frame(model4)[,3:5])
+total.var <- temp[,3]^2 + temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,3]^2/(total.var)
+het[11,3:5] <- c(mean(I2study),HPDinterval(I2study))
+I2species <- 100*temp[,2]^2/(total.var)
+het[12,3:5] <- c(mean(I2species),HPDinterval(I2species))
+I2units <- 100*temp[,1]^2/(total.var)
+het[13,3:5] <- c(mean(I2units),HPDinterval(I2units))
+I2Tot <- 100*(temp[,3]^2 + temp[,2]^2 + temp[,1]^2)/(total.var)
+het[14,3:5] <- c(mean(I2Tot),HPDinterval(I2Tot))
+
+#Model5
+temp <- as.mcmc(as.data.frame(model5)[,2:5])
+total.var <- temp[,4]^2 + temp[,3]^2 + temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,4]^2/(total.var)
+het[15,3:5] <- c(mean(I2study),HPDinterval(I2study))
+I2species <- 100*temp[,3]^2/(total.var)
+het[16,3:5] <- c(mean(I2species),HPDinterval(I2species))
+I2phylo <- 100*temp[,2]^2/(total.var)
+het[17,3:5] <- c(mean(I2phylo),HPDinterval(I2phylo))
+I2units <- 100*temp[,1]^2/(total.var)
+het[18,3:5] <- c(mean(I2units),HPDinterval(I2units))
+I2Tot <- 100*(temp[,4]^2 + temp[,3]^2 + temp[,2]^2 + temp[,1]^2)/(total.var)
+het[19,3:5] <- c(mean(I2Tot),HPDinterval(I2Tot))
+
+#Model6
+temp <- as.mcmc(as.data.frame(model6)[,3:6])
+total.var <- temp[,4]^2 + temp[,3]^2 + temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,4]^2/(total.var)
+het[20,3:5] <- c(mean(I2study),HPDinterval(I2study))
+I2species <- 100*temp[,3]^2/(total.var)
+het[21,3:5] <- c(mean(I2species),HPDinterval(I2species))
+I2phylo <- 100*temp[,2]^2/(total.var)
+het[22,3:5] <- c(mean(I2phylo),HPDinterval(I2phylo))
+I2units <- 100*temp[,1]^2/(total.var)
+het[23,3:5] <- c(mean(I2units),HPDinterval(I2units))
+I2Tot <- 100*(temp[,4]^2 + temp[,3]^2 + temp[,2]^2 + temp[,1]^2)/(total.var)
+het[24,3:5] <- c(mean(I2Tot),HPDinterval(I2Tot))
+
+write.table(het, modhet, quote = F, sep = "\t", row.names = F)

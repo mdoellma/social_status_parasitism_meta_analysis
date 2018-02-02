@@ -1,0 +1,6 @@
+yi	vi	studyid	taxa	species	setting	metric
+2.4423	0.353686	2	Primates	Macaca_fuscata_yakui	provisioned	richness
+1.5146	0.514706	6	Primates	Papio_cynocephalus	wild	richness
+1.8831	0.577298	6	Primates	Papio_cynocephalus	wild	richness
+0.0436	0.0635	8	Primates	Papio_anubis	wild	richness
+1.5733	0.127502	11	Carnivora	Suricata_suricatta	wild	richness

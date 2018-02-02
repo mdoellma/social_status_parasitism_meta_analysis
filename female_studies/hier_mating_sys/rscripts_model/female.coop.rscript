@@ -1,0 +1,46 @@
+#!/afs/crc.nd.edu/x86_64_linux/r/R/3.4.0/gcc/4.8.5/bin/R
+
+#Meta-analysis revisions with BRMS, male template
+#11/20/17, MMD
+
+library(ape)
+library(MCMCglmm)
+library(brms)
+
+args = commandArgs(trailingOnly=TRUE)
+root <- sub("txt", "", args[1])
+
+
+#says males but I don't want to change all of them
+
+malesData <- read.table(args[1],header=T,stringsAsFactors=F)
+malesData$phylo <- as.factor(malesData$species)
+malesData$study <- as.factor(malesData$studyid)
+malesData$set <- as.factor(malesData$setting)
+malesData$obs <- 1:nrow(malesData)
+
+#calculate "typical" measurement error variance as Higgins & Thompson 2002
+# wi = inverse of Var
+malesData$wi <- 1/malesData$vi
+s2m <- sum(malesData$wi*(length(malesData$wi)-1))/(sum(malesData$wi)^2-sum(malesData$wi^2))
+
+
+
+
+
+#study
+model1 <- brm(yi | se(sqrt(vi)) ~ 1 + (1|study) + (1|obs),
+                    data = malesData, family = gaussian(),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.9999999999999999,max_treedepth = 18),
+                    chains = 4, cores = 4, iter = 23000, warmup = 20000)
+
+
+k1 <- kfold(model1,K=10)
+
+outfile = paste(root,"Rdata",sep="")
+print(outfile)
+save.image(outfile)
+q()
+
