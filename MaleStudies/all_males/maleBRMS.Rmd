@@ -1,0 +1,298 @@
+---
+title: "Multi-level Meta-analysis in BRMS, All Male Studies"
+author: Meredith M. Doellman
+date: February 1, 2018
+output:
+  pdf_document:
+    df_print: kable
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.pos='H')
+```
+
+
+This code includes the analysis of the full male data set. All other analyses were conducted under the same framework, and can be found along with the associated phylogenies and data sets in our [Github repository] (https://github.com/mdoellma/social_status_parasitism_meta_analysis). Analyses were performed	in R v3.4.0, brms v1.10.2, MCMCglmm v2.25.
+
+
+Load the required libraries.
+```{r}
+library(MCMCglmm)
+library(brms)
+```
+
+Load the data and format factors.
+```{r}
+malesData <- read.table('male.all.txt',header=T,stringsAsFactors=F)
+malesData$phylo <- as.factor(malesData$species)
+malesData$study <- as.factor(malesData$studyid)
+malesData$set <- as.factor(malesData$setting)
+malesData$obs <- 1:nrow(malesData)
+malesData
+```
+
+Load the phylogenetic tree and invert for brms.
+```{r}
+malesTree <- read.tree("../male.bladj")
+inv.males <- MCMCglmm::inverseA(malesTree, nodes = "TIPS", scale = TRUE)
+A <- solve(inv.males$Ainv)
+rownames(A) <- rownames(inv.males$Ainv)
+plot(malesTree,cex=0.7,show.node.label=T,label.offset=2)
+```
+
+Calculate "typical" measurement error variance as Higgins & Thompson 2002, for use in heterogeneity calculations.
+```{r}
+malesData$wi <- 1/malesData$vi
+s2m <- sum(malesData$wi*(length(malesData$wi)-1))/(sum(malesData$wi)^2-sum(malesData$wi^2))
+```
+
+
+###Model 1
+
+Multi-level meta-analytic model, including study as a random effect.
+```{r}
+model1 <- brm(yi | se(sqrt(vi)) ~ 1 + (1|study) + (1|obs),
+                    data = malesData, family = gaussian(),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.998,max_treedepth = 15),
+                    chains = 4, cores = 4, iter = 4000, warmup = 1000)
+summary(model1)
+```
+
+Calculate heterogeneity values, according to Nakagawa & Santos (2012).
+```{r}
+temp <- as.mcmc(as.data.frame(model1)[,2:3])
+total.var <- temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,2]^2/(total.var)
+I2units <- 100*temp[,1]^2/(total.var)
+I2Tot <- 100*(temp[,2]^2 + temp[,1]^2)/(total.var)
+```
+Mean and HPD interval for study heterogeneity.
+```{r}
+c(mean(I2study),HPDinterval(I2study))
+```
+Mean and HPD interval for residual heterogeneity.
+```{r}
+c(mean(I2units),HPDinterval(I2units))
+```
+Mean and HPD interval for total heterogeneity.
+```{r}
+c(mean(I2Tot),HPDinterval(I2Tot))
+```
+
+
+##Model 2
+
+Multi-level meta-regression model, including study as a random effect and study setting as a moderator.
+```{r}
+model2 <- brm(yi | se(sqrt(vi)) ~ set + (1|study) + (1|obs),
+                    data = malesData, family = gaussian(),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.998,max_treedepth = 15),
+                    chains = 4, cores = 4, iter = 4000, warmup = 1000)
+summary(model2)
+```
+
+Calculate heterogeneity values, according to Nakagawa & Santos (2012).
+```{r}
+temp <- as.mcmc(as.data.frame(model2)[,3:4])
+total.var <- temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,2]^2/(total.var)
+I2units <- 100*temp[,1]^2/(total.var)
+I2Tot <- 100*(temp[,2]^2 + temp[,1]^2)/(total.var)
+```
+Mean and HPD interval for study heterogeneity.
+```{r}
+c(mean(I2study),HPDinterval(I2study))
+```
+Mean and HPD interval for residual heterogeneity.
+```{r}
+c(mean(I2units),HPDinterval(I2units))
+```
+Mean and HPD interval for total heterogeneity.
+```{r}
+c(mean(I2Tot),HPDinterval(I2Tot))
+```
+
+
+##Model 3
+
+Multi-level meta-analytic model, including study and species as random effects.
+```{r}
+model3 <- brm(yi | se(sqrt(vi)) ~ 1 + (1|study) + (1|species) + (1|obs),
+                    data = malesData, family = gaussian(),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.998,max_treedepth = 15),
+                    chains = 4, cores = 4, iter = 4000, warmup = 1000)
+summary(model3)
+```
+
+Calculate heterogeneity values, according to Nakagawa & Santos (2012).
+```{r}
+temp <- as.mcmc(as.data.frame(model3)[,2:4])
+total.var <- temp[,3]^2 + temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,3]^2/(total.var)
+I2species <- 100*temp[,2]^2/(total.var)
+I2units <- 100*temp[,1]^2/(total.var)
+I2Tot <- 100*(temp[,3]^2 + temp[,2]^2 + temp[,1]^2)/(total.var)
+```
+Mean and HPD interval for study heterogeneity.
+```{r}
+c(mean(I2study),HPDinterval(I2study))
+```
+Mean and HPD interval for species heterogeneity.
+```{r}
+c(mean(I2species),HPDinterval(I2species))
+```
+Mean and HPD interval for residual heterogeneity.
+```{r}
+c(mean(I2units),HPDinterval(I2units))
+```
+Mean and HPD interval for total heterogeneity.
+```{r}
+c(mean(I2Tot),HPDinterval(I2Tot))
+```
+
+
+##Model 4
+
+Multi-level meta-regression model, including study and species as random effects and study setting as a moderator.
+```{r}
+model4 <- brm(yi | se(sqrt(vi)) ~ set + (1|study) + (1|species) + (1|obs),
+                    data = malesData, family = gaussian(),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.998,max_treedepth = 15),
+                    chains = 4, cores = 4, iter = 4000, warmup = 1000)
+summary(model4)
+```
+
+Calculate heterogeneity values, according to Nakagawa & Santos (2012).
+```{r}
+temp <- as.mcmc(as.data.frame(model4)[,3:5])
+total.var <- temp[,3]^2 + temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,3]^2/(total.var)
+I2species <- 100*temp[,2]^2/(total.var)
+I2units <- 100*temp[,1]^2/(total.var)
+I2Tot <- 100*(temp[,3]^2 + temp[,2]^2 + temp[,1]^2)/(total.var)
+```
+Mean and HPD interval for study heterogeneity.
+```{r}
+c(mean(I2study),HPDinterval(I2study))
+```
+Mean and HPD interval for species heterogeneity.
+```{r}
+c(mean(I2species),HPDinterval(I2species))
+```
+Mean and HPD interval for residual heterogeneity.
+```{r}
+c(mean(I2units),HPDinterval(I2units))
+```
+Mean and HPD interval for total heterogeneity.
+c(mean(I2Tot),HPDinterval(I2Tot))
+```
+
+
+##Model 5
+
+Multi-level meta-analytic model, including study, species and phylogeny as random effects.
+```{r}
+model5 <- brm(yi | se(sqrt(vi)) ~ 1 + (1|study) + (1|species) + (1|phylo) + (1|obs),
+                    data = malesData, family = gaussian(),
+                    cov_ranef = list(phylo = A),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.998,max_treedepth = 15),
+                    chains = 4, cores = 4, iter = 4000, warmup = 1000)
+summary(model5)
+```
+
+Calculate heterogeneity values, according to Nakagawa & Santos (2012).
+```{r}
+temp <- as.mcmc(as.data.frame(model5)[,2:5])
+total.var <- temp[,4]^2 + temp[,3]^2 + temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,4]^2/(total.var)
+I2species <- 100*temp[,3]^2/(total.var)
+I2phylo <- 100*temp[,2]^2/(total.var)
+I2units <- 100*temp[,1]^2/(total.var)
+I2Tot <- 100*(temp[,4]^2 + temp[,3]^2 + temp[,2]^2 + temp[,1]^2)/(total.var)
+```
+Mean and HPD interval for study heterogeneity.
+```{r}
+c(mean(I2study),HPDinterval(I2study))
+```
+Mean and HPD interval for species heterogeneity.
+```{r}
+c(mean(I2species),HPDinterval(I2species))
+```
+Mean and HPD interval for species heterogeneity.
+```{r}
+c(mean(I2phylo),HPDinterval(I2phylo))
+```
+Mean and HPD interval for residual heterogeneity.
+```{r}
+c(mean(I2units),HPDinterval(I2units))
+```
+Mean and HPD interval for total heterogeneity.
+c(mean(I2Tot),HPDinterval(I2Tot))
+```
+
+
+##Model 6
+
+Multi-level meta-regression model, including study, species and phylogeny as random effects and study setting as a moderator.
+```{r}
+model6 <- brm(yi | se(sqrt(vi)) ~ set + (1|study) + (1|species) + (1|phylo) + (1|obs),
+                    data = malesData, family = gaussian(),
+                    cov_ranef = list(phylo = A),
+                    prior = c(prior(normal(0, 10), "Intercept"),
+                              prior(student_t(3, 0, 10), "sd")),
+                    control = list(adapt_delta = 0.998,max_treedepth = 15),
+                    chains = 4, cores = 4, iter = 4000, warmup = 1000)
+summary(model6)
+```
+
+Calculate heterogeneity values, according to Nakagawa & Santos (2012).
+```{r}
+temp <- as.mcmc(as.data.frame(model6)[,3:6])
+total.var <- temp[,4]^2 + temp[,3]^2 + temp[,2]^2 + temp[,1]^2 + s2m
+I2study <- 100*temp[,4]^2/(total.var)
+I2species <- 100*temp[,3]^2/(total.var)
+I2phylo <- 100*temp[,2]^2/(total.var)
+I2units <- 100*temp[,1]^2/(total.var)
+I2Tot <- 100*(temp[,4]^2 + temp[,3]^2 + temp[,2]^2 + temp[,1]^2)/(total.var)
+```
+Mean and HPD interval for study heterogeneity.
+```{r}
+c(mean(I2study),HPDinterval(I2study))
+```
+Mean and HPD interval for species heterogeneity.
+```{r}
+c(mean(I2species),HPDinterval(I2species))
+```
+Mean and HPD interval for species heterogeneity.
+```{r}
+c(mean(I2phylo),HPDinterval(I2phylo))
+```
+Mean and HPD interval for residual heterogeneity.
+```{r}
+c(mean(I2units),HPDinterval(I2units))
+```
+Mean and HPD interval for total heterogeneity.
+c(mean(I2Tot),HPDinterval(I2Tot))
+```
+
+
+Conduct K-fold cross-validation for each model, with K=10. 
+```{r}
+(k1 <- kfold(model1,K=10))
+(k2 <- kfold(model2,K=10))
+(k3 <- kfold(model3,K=10))
+(k4 <- kfold(model4,K=10))
+(k5 <- kfold(model5,K=10))
+(k6 <- kfold(model6,K=10))
+```
+
