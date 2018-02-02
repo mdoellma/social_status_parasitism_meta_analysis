@@ -1,0 +1,16 @@
+yi	vi	studyid	taxa	species	setting	metric
+-0.6992	0.3032	4	Primates	Colobus_vellerosus	wild	prevalence
+1.5	0.8542	5	Primates	Colobus_guereza_kikuyuensis	captive	prevalence
+3.6065	1.312926	6	Primates	Papio_cynocephalus	wild	intensity
+1.8778	0.753709	7	Primates	Papio_cynocephalus	wild	intensity
+2.2323	0.844777	7	Primates	Papio_cynocephalus	wild	intensity
+5.5104	3.197	8	Primates	Colobus_guereza_kikuyuensis	captive	intensity
+-0.3123	0.1687	11	Primates	Papio_cynocephalus	wild	intensity
+0.4591	0.1711	11	Primates	Papio_cynocephalus	wild	intensity
+0.1388	0.1485	19	Primates	Papio_anubis	wild	intensity
+0.6992	0.1572	19	Primates	Papio_anubis	wild	richness
+-0.5825	0.2646	25	Primates	Lophocebus_albigena	wild	prevalence
+-0.5113	0.2621	25	Primates	Lophocebus_albigena	wild	intensity
+-0.4079	0.2592	25	Primates	Lophocebus_albigena	wild	prevalence
+-0.3075	0.2569	25	Primates	Lophocebus_albigena	wild	richness
+0.2484	0.2559	25	Primates	Lophocebus_albigena	wild	prevalence

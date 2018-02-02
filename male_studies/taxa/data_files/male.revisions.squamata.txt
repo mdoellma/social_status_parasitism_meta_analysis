@@ -1,0 +1,4 @@
+yi	vi	studyid	taxa	species	setting	metric
+-1.7426	0.2706	2	Squamata	Sceloporus_occidentalis	wild	prevalence
+0.4491	0.121022	10	Squamata	Podarcis_melisellensis	wild	intensity
+0	0.151982	17	Squamata	Anolis_sabanus	wild	prevalence

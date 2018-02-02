@@ -1,0 +1,9 @@
+yi	vi	studyid	taxa	species	setting	metric
+0.1263	0.1431	12	Aves	Passer_domesticus	captive	intensity
+-0.2702	0.061757	14	Aves	Ptilonorhynchus_violaceus	wild	intensity
+0.345	0.1097	16	Aves	Parus_major	wild	intensity
+0.4296	0.1106	16	Aves	Parus_major	wild	intensity
+0.4945	0.1114	16	Aves	Parus_major	wild	intensity
+1.0409	0.371181	20	Aves	Malurus_cyaneus	wild	prevalence
+-0.4727	0.0914	26	Aves	Agelaius_phoeniceus	wild	intensity
+-0.02	0.0889	26	Aves	Agelaius_phoeniceus	wild	richness
